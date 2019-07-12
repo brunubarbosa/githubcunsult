@@ -60,7 +60,7 @@ class Main extends Component {
          let { repositories } = this.state
          this.setState({...this.state, repositories: repositories.filter(element => element.name !== repositoryToDelete)})
          localStorage.setItem('repositories', JSON.stringify(this.state.repositories))
-        console.log(this.state)
+
     }
     render() {
         const { newRepo, repositories, loading } = this.state;
@@ -86,7 +86,6 @@ class Main extends Component {
                 <List>
                     {repositories.map(repository => (
                         <li key={repository.name}>
-                            {console.log(repository)}
                             <span>{repository.name}</span>
                             <div>
 
