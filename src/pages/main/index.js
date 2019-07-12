@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { FaGithubAlt, FaPlus, FaSpinner, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import api from '../../services/api';
 import { Form, SubmitButton, List } from './styles';
 import { Container } from '../../components/Container';
+import { Creators as repositoriesActions } from '../../store/ducks/repositories'
 
-class Main extends Component {
+export class Main extends Component {
     state = {
         newRepo: '',
         repositories: [],
@@ -14,6 +17,7 @@ class Main extends Component {
     };
 
     componentDidMount() {
+
         const repositories = localStorage.getItem('repositories');
 
         if(repositories) {
@@ -37,33 +41,35 @@ class Main extends Component {
     handleSubmit = async e => {
         e.preventDefault();
 
-        this.setState({loading: true});
 
-        const { newRepo, repositories } = this.state;
+
+        // this.setState({loading: true});
+        this.setState({loading: true});
+        const { newRepo } = this.state;
         try {
             const response = await api.get(`/repos/${newRepo}`)
             const data = {
                 name: response.data.full_name,
             }
-            this.setState({
-                repositories: [...repositories, data],
-                newRepo: '',
-            })
+            console.log(data)
+            this.props.adicionarRepository(data)
         }catch(err) {
             console.log(err)
         }
-
         this.setState({loading: false});
     }
 
      handleDeleteItem = (repositoryToDelete) => {
-         let { repositories } = this.state
-         this.setState({...this.state, repositories: repositories.filter(element => element.name !== repositoryToDelete)})
-         localStorage.setItem('repositories', JSON.stringify(this.state.repositories))
+         this.props.removeRepository(repositoryToDelete)
+        //  let { repositories } = this.state
+        //  this.setState({...this.state, repositories: repositories.filter(element => element.name !== repositoryToDelete)})
+        //  localStorage.setItem('repositories', JSON.stringify(this.state.repositories))
 
     }
     render() {
-        const { newRepo, repositories, loading } = this.state;
+        console.log(this.props)
+        const { newRepo, loading } = this.state;
+        const { repositories } = this.props;
 
         return (
 
@@ -100,4 +106,7 @@ class Main extends Component {
     }
 }
 
-export default Main;
+const mapStateToProps = ({ repositories }) => ({ ...repositories })
+const mapDispatchToProps = dispatch => bindActionCreators(repositoriesActions, dispatch)
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main)
