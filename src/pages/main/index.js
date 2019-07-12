@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
+import { FaGithubAlt, FaPlus, FaSpinner, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import api from '../../services/api';
@@ -24,7 +24,8 @@ class Main extends Component {
     componentDidUpdate(_, prevState) {
         const { repositories } = this.state;
 
-        if(prevState.repositories === repositories) {
+        if(prevState.repositories != repositories) {
+
             localStorage.setItem('repositories', JSON.stringify(repositories))
         }
     }
@@ -54,6 +55,13 @@ class Main extends Component {
 
         this.setState({loading: false});
     }
+
+     handleDeleteItem = (repositoryToDelete) => {
+         let { repositories } = this.state
+         this.setState({...this.state, repositories: repositories.filter(element => element.name !== repositoryToDelete)})
+         localStorage.setItem('repositories', JSON.stringify(this.state.repositories))
+        console.log(this.state)
+    }
     render() {
         const { newRepo, repositories, loading } = this.state;
 
@@ -80,7 +88,11 @@ class Main extends Component {
                         <li key={repository.name}>
                             {console.log(repository)}
                             <span>{repository.name}</span>
+                            <div>
+
                             <Link to={`/repository/${encodeURIComponent(repository.name)}`}>Detalhes</Link>
+                            <FaTimes color="red" cursor="pointer" onClick={() => this.handleDeleteItem(repository.name)} />
+                            </div>
                         </li>
                     ))}
                 </List>

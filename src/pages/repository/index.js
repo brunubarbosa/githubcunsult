@@ -47,7 +47,6 @@ export default class Repository extends Component {
 
     render() {
         const { repository, issues, loading } = this.state;
-        console.log(repository.owner)
         if(loading) {
             return <Loading>Carregando</Loading>
         }
