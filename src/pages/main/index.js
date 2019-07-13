@@ -25,22 +25,22 @@ export class Main extends Component {
         }
     }
 
-    handleInputChange = e => {
-        this.setState({newRepo: e.target.value})
+    handleInputChange = ({ target }) => {
+        this.props.changeInputText(target.value)
     }
 
     handleSubmit = async e => {
         e.preventDefault();
 
         this.setState({loading: true});
-        const { newRepo } = this.state;
         try {
-            const response = await api.get(`/repos/${newRepo}`)
+            const response = await api.get(`/repos/${this.props.inputText}`)
             const data = {
                 name: response.data.full_name,
             }
             this.props.adicionarRepository(data)
             localStorage.setItem('repositories', JSON.stringify(this.props.repositories))
+            this.props.changeInputText('')
         }catch(err) {
         }
         this.setState({loading: false});
@@ -48,10 +48,9 @@ export class Main extends Component {
 
      handleDeleteItem = async (repositoryToDelete) => {
          await this.props.removeRepository(repositoryToDelete)
-
+         localStorage.setItem('repositories', JSON.stringify(this.props.repositories))
     }
     render() {
-        const { newRepo, loading } = this.state;
         const { repositories } = this.props;
 
         return (
@@ -65,10 +64,10 @@ export class Main extends Component {
                 <Form onSubmit={this.handleSubmit}>
                     <input type="text"
                     onChange={this.handleInputChange}
-                    value={newRepo}
+                    value={this.props.inputText}
                     placeholder="Adicionar repositorio"/>
-                    <SubmitButton loading={loading}>
-                        {loading ? <FaSpinner/> : <FaPlus/>}
+                    <SubmitButton loading={this.state.loading}>
+                        {this.state.loading ? <FaSpinner/> : <FaPlus/>}
 
                     </SubmitButton>
                 </Form>
