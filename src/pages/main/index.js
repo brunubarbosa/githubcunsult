@@ -21,16 +21,7 @@ export class Main extends Component {
         const repositories = localStorage.getItem('repositories');
 
         if(repositories) {
-            this.setState({ repositories: JSON.parse(repositories) })
-        }
-    }
-
-    componentDidUpdate(_, prevState) {
-        const { repositories } = this.state;
-
-        if(prevState.repositories != repositories) {
-
-            localStorage.setItem('repositories', JSON.stringify(repositories))
+            JSON.parse(repositories).map(element => this.props.adicionarRepository(element))
         }
     }
 
@@ -51,23 +42,18 @@ export class Main extends Component {
             const data = {
                 name: response.data.full_name,
             }
-            console.log(data)
             this.props.adicionarRepository(data)
+            localStorage.setItem('repositories', JSON.stringify(this.props.repositories))
         }catch(err) {
-            console.log(err)
         }
         this.setState({loading: false});
     }
 
-     handleDeleteItem = (repositoryToDelete) => {
-         this.props.removeRepository(repositoryToDelete)
-        //  let { repositories } = this.state
-        //  this.setState({...this.state, repositories: repositories.filter(element => element.name !== repositoryToDelete)})
-        //  localStorage.setItem('repositories', JSON.stringify(this.state.repositories))
+     handleDeleteItem = async (repositoryToDelete) => {
+         await this.props.removeRepository(repositoryToDelete)
 
     }
     render() {
-        console.log(this.props)
         const { newRepo, loading } = this.state;
         const { repositories } = this.props;
 
