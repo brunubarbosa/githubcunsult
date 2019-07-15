@@ -31,19 +31,23 @@ export class Main extends Component {
 
     handleSubmit = async e => {
         e.preventDefault();
+        const { loading, setLoad, inputText, setRepositoryError } = this.props
 
-        this.setState({loading: true});
+        setLoad(true)
+        console.log(loading)
         try {
-            const response = await api.get(`/repos/${this.props.inputText}`)
+            const response = await api.get(`/repos/${inputText}`)
             const data = {
                 name: response.data.full_name,
             }
             this.props.adicionarRepository(data)
             localStorage.setItem('repositories', JSON.stringify(this.props.repositories))
             this.props.changeInputText('')
+            setRepositoryError(false)
         }catch(err) {
+            setRepositoryError(true)
         }
-        this.setState({loading: false});
+        setLoad(false)
     }
 
      handleDeleteItem = async (repositoryToDelete) => {
@@ -51,7 +55,8 @@ export class Main extends Component {
          localStorage.setItem('repositories', JSON.stringify(this.props.repositories))
     }
     render() {
-        const { repositories } = this.props;
+        const { repositories, loading, repositoryError } = this.props;
+        console.log(this.props)
 
         return (
 
@@ -66,11 +71,12 @@ export class Main extends Component {
                     onChange={this.handleInputChange}
                     value={this.props.inputText}
                     placeholder="Adicionar repositorio"/>
-                    <SubmitButton loading={this.state.loading}>
-                        {this.state.loading ? <FaSpinner/> : <FaPlus/>}
+                    <SubmitButton loading={loading}>
+                        {loading ? <FaSpinner/> : <FaPlus/>}
 
                     </SubmitButton>
                 </Form>
+                    {repositoryError && <span>Talvez esse Repositório não exista</span>}
                 <List>
                     {repositories.map(repository => (
                         <li key={repository.name}>

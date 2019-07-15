@@ -1,12 +1,16 @@
 const Types = {
     REMOVE_REPOSITORY: 'repositories/REMOVE_REPOSITORY',
     INPUT_TEXT: 'repositories/INPUT_TEXT',
-    ADICIONAR_REPOSITORY: 'repositories/ADICIONAR_REPOSITORY'
+    LOADING: 'repositories/LOADING',
+    ADICIONAR_REPOSITORY: 'repositories/ADICIONAR_REPOSITORY',
+    REPOSITORY_ERROR: 'repositories/REPOSITORY_ERROR'
 }
 
 const INITIAL_STATE = {
     repositories: [],
-    inputText: ''
+    inputText: '',
+    loading: false,
+    repositoryError: false
 }
 
 export default function repositories(state = INITIAL_STATE, action) {
@@ -17,6 +21,10 @@ export default function repositories(state = INITIAL_STATE, action) {
             return {...state, repositories: [...state.repositories, action.payload.repository]}
         case Types.INPUT_TEXT:
             return {...state, inputText: action.payload.text}
+        case Types.LOADING:
+            return {...state, loading: action.payload.loading}
+        case Types.REPOSITORY_ERROR:
+            return {...state, repositoryError: action.payload.error}
 
         default:
             return state;
@@ -36,10 +44,22 @@ export const Creators = {
             text,
         }
     }),
+    setLoad: boolean => ({
+        type: Types.LOADING,
+        payload: {
+            loading: boolean
+        }
+    }),
     adicionarRepository: repositoryName => ({
         type: Types.ADICIONAR_REPOSITORY,
         payload: {
             repository: repositoryName
+        }
+    }),
+    setRepositoryError: boolean => ({
+        type: Types.REPOSITORY_ERROR,
+        payload: {
+            error: boolean
         }
     })
 }
