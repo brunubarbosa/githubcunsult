@@ -18,7 +18,7 @@ export default function repositories(state = INITIAL_STATE, action) {
         case Types.REMOVE_REPOSITORY:
             return {...state, repositories: state.repositories.filter(element => element.name !== action.payload.repository)};
         case Types.ADICIONAR_REPOSITORY:
-            return {...state, repositories: [...state.repositories, action.payload.repository]}
+            return {...state, repositories: [action.payload.repository]}
         case Types.INPUT_TEXT:
             return {...state, inputText: action.payload.text}
         case Types.LOADING:

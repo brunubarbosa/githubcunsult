@@ -19,7 +19,8 @@ export class Main extends Component {
     componentDidMount() {
 
         const repositories = localStorage.getItem('repositories');
-
+        console.log(repositories)
+        console.log(this.props)
         if(repositories) {
             JSON.parse(repositories).map(element => this.props.adicionarRepository(element))
         }
