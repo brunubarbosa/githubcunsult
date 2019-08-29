@@ -103,3 +103,10 @@ export const IssuesList = styled.ul`
 
     }
 `;
+
+
+export const IssueDetail = styled.div`
+    &.--disabled {
+        display: none;
+    }
+`;

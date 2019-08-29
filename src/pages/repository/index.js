@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import api from '../../services/api';
 
-import { Loading, Owner, IssuesList } from './styles';
+import { Loading, Owner, IssuesList, IssueDetail } from './styles';
 import { Container } from '../../components/Container';
 
 export default class Repository extends Component {
@@ -30,23 +30,29 @@ export default class Repository extends Component {
             await api.get(`/repos/${repoName}/issues`, {
                 params: {
                     state: 'open',
-                    per_page: 5,
+                    per_page: 10,
                 }
             })
         ])
-
+        console.log(issues)
         this.setState({
             repository: repository.data,
-            issues: issues.data,
+            issues: issues.data.map(issue => ({...issue, isExpanded: false})),
             loading: false,
         })
 
 
     }
 
+    handleExpandIssue(issueIndex) {
+        const newIssues = this.state.issues.map((issue, index) => index === issueIndex ? {...issue, isExpanded: !issue.isExpanded} : {...issue, isExpanded: false} )
+        this.setState({issues: newIssues})
+    }
+
 
     render() {
         const { repository, issues, loading } = this.state;
+        console.log(issues)
         if(loading) {
             return <Loading>Carregando</Loading>
         }
@@ -59,20 +65,27 @@ export default class Repository extends Component {
                     <p>{repository.description}</p>
                 </Owner>
 
-                <IssuesList>
-                    {issues.map(issue => (
-                        <li key={String(issue.id)}>
-                            <img src={issue.user.avatar_url} alt={issue.user.login} />
-                            <div>
-                                <strong>
-                                    <a href={issue.html_url}>{issue.title}</a>
-                                    {issue.labels.map(label => (
-                                        <span key={label.id}>{label.name}</span>
-                                    ))}
-                                </strong>
-                                <p>{issue.user.login}</p>
-                            </div>
-                        </li>
+                <IssuesList >
+                    {issues.map((issue, index) => (
+                        <div onClick={() => this.handleExpandIssue(index)}>
+
+                            <li key={String((issue, index).id)} onClick={()=>{}}>
+                                <img src={issue.user.avatar_url} alt={issue.user.login} />
+                                <div>
+                                    <strong>
+                                        <a href={issue.html_url}>{issue.title}</a>
+                                        {issue.labels.map(label => (
+                                            <span key={label.id}>{label.name}</span>
+                                        ))}
+                                    </strong>
+                                    <p>{issue.user.login}</p>
+                                </div>
+                            </li>
+                            <IssueDetail className={`${issue.isExpanded ? '' : '--disabled'}`} >
+                                <span>{issue.created_at}</span>
+                                <span>{issue.body}</span>
+                            </IssueDetail>
+                        </div>
                     ))}
                 </IssuesList>
             </Container>
