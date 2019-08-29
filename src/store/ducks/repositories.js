@@ -25,7 +25,6 @@ export default function repositories(state = INITIAL_STATE, action) {
             return {...state, loading: action.payload.loading}
         case Types.REPOSITORY_ERROR:
             return {...state, repositoryError: action.payload.error}
-
         default:
             return state;
     }
