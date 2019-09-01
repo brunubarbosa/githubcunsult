@@ -19,8 +19,6 @@ export class Main extends Component {
     componentDidMount() {
 
         const repositories = localStorage.getItem('repositories');
-        console.log(repositories)
-        console.log(this.props)
         if(repositories) {
             JSON.parse(repositories).map(element => this.props.adicionarRepository(element))
         }
@@ -35,7 +33,6 @@ export class Main extends Component {
         const { loading, setLoad, inputText, setRepositoryError } = this.props
 
         setLoad(true)
-        console.log(loading)
         try {
             const response = await api.get(`/repos/${inputText}`)
             const data = {
@@ -57,7 +54,6 @@ export class Main extends Component {
     }
     render() {
         const { repositories, loading, repositoryError } = this.props;
-        console.log(this.props)
 
         return (
 

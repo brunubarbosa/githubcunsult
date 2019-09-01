@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import api from '../../services/api';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
+
+import { Creators as issuesActions } from '../../store/ducks/issues'
+import { Link } from 'react-router-dom';
+import api from '../../services/api';
 import { Loading, Owner, IssuesList, IssueDetail } from './styles';
 import { Container } from '../../components/Container';
 
-export default function Repository(props) {
-    // static propTypes = {
-    //     match: PropTypes.shape({
-    //         params: PropTypes.shape({
-    //             repository: PropTypes.string,
-    //         })
-    //     }).isRequired,
-    // }
-    const [ state, setState] = useState({
-
-    })
+export function Repository(props) {
+    console.log(props)
+    const [ state, setState] = useState({})
     useEffect( async () => {
         const { match } = props;
 
@@ -34,20 +29,19 @@ export default function Repository(props) {
         ])
         setState({
             repository: repository.data,
-            issues: issues.data.map(issue => ({...issue, isExpanded: false})),
             loading: false,
         })
+        props.setIssues(issues.data.map(issue => ({...issue, isExpanded: false})))
 
 
     }, [])
 
-    const handleExpandIssue = (issueIndex) => {
-        const newIssues = state.issues.map((issue, index) => index === issueIndex ? {...issue, isExpanded: !issue.isExpanded} : {...issue, isExpanded: false} )
-        setState({issues: newIssues})
-    }
+    const handleExpandIssue = (issueIndex) => props.expandIssue(issueIndex)
 
 
-    const { repository, issues, loading } = state;
+    const { repository, loading } = state;
+    console.log(props)
+    console.log('props')
     return (
         !loading ?
             (<Container>
@@ -60,7 +54,7 @@ export default function Repository(props) {
                 </Owner>}
 
             <IssuesList >
-                {issues && issues.map((issue, index) => (
+                {props.issues && props.issues.map((issue, index) => (
                     <div onClick={() => handleExpandIssue(index)}>
 
                         <li key={String((issue, index).id)} onClick={()=>{}}>
@@ -85,3 +79,9 @@ export default function Repository(props) {
         </Container>) : <Loading>Carregando</Loading>
     )
 }
+
+const mapStateToProps = (issues) => issues
+
+const mapDispatchToProps = dispatch => bindActionCreators(issuesActions, dispatch)
+
+export default connect(mapStateToProps, mapDispatchToProps)(Repository)
